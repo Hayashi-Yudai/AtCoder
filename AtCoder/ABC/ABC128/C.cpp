@@ -3,61 +3,83 @@ using namespace std;
 typedef long long ll;
 
 int n, m;
-vector<vector<int>> vec(m);
-vector<int> p(m);
-int ans = 0;
-int r[13];
-void solve(int idx)
+vector<vector<int>> v;
+vector<int> p;
+
+bool judge(vector<int> det)
 {
-  if (idx == n)
+  for (int i = 0; i < m; i++)
   {
-    for (int i = 0; i < m; i++)
+    int cnt = 0;
+    for (int j = 0; j < v[i].size(); j++)
     {
-      int count = 0;
-      for (int j = 0; j < vec[i].size(); j++)
+      if (det[v[i][j] - 1])
       {
-        if (r[vec[i][j]] == 1)
-        {
-          count++;
-        }
-      }
-      if (count % 2 != p[i])
-      {
-        return;
+        cnt++;
       }
     }
 
-    ans++;
-    return;
+    if (cnt % 2 != p[i])
+    {
+      return false;
+    }
   }
 
-  r[idx] = 0;
-  solve(idx + 1);
-  r[idx] = 1;
-  solve(idx + 1);
+  return true;
+}
+
+int solve(vector<int> det, int point)
+{
+  if (det.size() == n)
+  {
+    if (judge(det))
+    {
+      return 1;
+    }
+    else
+    {
+      return 0;
+    }
+  }
+  else
+  {
+    det.push_back(0);
+    point += solve(det, point);
+    det.pop_back();
+
+    det.push_back(1);
+    point += solve(det, point);
+    det.pop_back();
+
+    return point;
+  }
 }
 
 int main()
 {
   cin >> n >> m;
 
+  int k;
   for (int i = 0; i < m; i++)
   {
-    int k;
     cin >> k;
-    vec[i].resize(k);
+    vector<int> s;
     for (int j = 0; j < k; j++)
     {
-      cin >> vec[i][j];
-      vec[i][j]--;
+      int a;
+      cin >> a;
+      s.push_back(a);
     }
+    v.push_back(s);
   }
 
   for (int i = 0; i < m; i++)
   {
-    cin >> p[i];
+    int b;
+    cin >> b;
+    p.push_back(b);
   }
 
-  solve(1);
-  cout << ans << endl;
+  vector<int> det;
+  cout << solve(det, 0) << endl;
 }
